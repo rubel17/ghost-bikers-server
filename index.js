@@ -18,52 +18,52 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
     try {
-     const userCollection = client.db('nodeMongoCrud').collection('users');
+     const userCollection = client.db('Rubel').collection('Ghost-Bikers');
 
-        app.get('/users', async(req, res) =>{
+        app.get('/Ghost-Bikers', async(req, res) =>{
             const query = {};
             const cursor = userCollection.find(query);
             const users = await cursor.toArray();
             res.send(users);
         })
 
-        app.get('/users/:id', async(req, res) =>{
+        app.get('/Ghost-Bikers/:id', async(req, res) =>{
             const id = req.params.id;
             const query = { _id: ObjectId(id)};
-            const user = await userCollection.findOne(query);
-            res.send(user);
+            const ghost = await userCollection.findOne(query);
+            res.send(ghost);
         })
 
-    app.post('/users', async(req, res) => {
-        const user = req.body;
-        const result = await userCollection.insertOne(user);
-        res.send(result);
-        console.log(result)
-    })
+    // app.post('/Ghost-Bikers', async(req, res) => {
+    //     const user = req.body;
+    //     const result = await userCollection.insertOne(user);
+    //     res.send(result);
+    //     console.log(result)
+    // })
 
-    app.put('/users/:id', async(req, res) =>{
-        const id = req.params.id;
-        const filter = {_id: ObjectId(id)};
-        const user = req.body;
-        const option = {upsert: true};
-        const updatedUser = {
-            $set:{
-                name:user.name,
-                email:user.email
-            }
-        };
-        const result = await userCollection.updateOne(filter, updatedUser, option);
-        res.send(result);
-        console.log(updatedUser);
-    })
+    // app.put('/Ghost-Bikers/:id', async(req, res) =>{
+    //     const id = req.params.id;
+    //     const filter = {_id: ObjectId(id)};
+    //     const user = req.body;
+    //     const option = {upsert: true};
+    //     const updatedUser = {
+    //         $set:{
+    //             name:user.name,
+    //             email:user.email
+    //         }
+    //     };
+    //     const result = await userCollection.updateOne(filter, updatedUser, option);
+    //     res.send(result);
+    //     console.log(updatedUser);
+    // })
 
-    app.delete('/users/:id', async(req, res) => {
-        const id = req.params.id;
-        const query = {_id: ObjectId(id)}
-        const result = await userCollection.deleteOne(query);
-        res.send(result);
-        console.log(id)
-    })
+    // app.delete('/Ghost-Bikers/:id', async(req, res) => {
+    //     const id = req.params.id;
+    //     const query = {_id: ObjectId(id)}
+    //     const result = await userCollection.deleteOne(query);
+    //     res.send(result);
+    //     console.log(id)
+    // })
 
     } finally {
       
@@ -75,8 +75,8 @@ async function run() {
 app.get('/', (req, res) =>{
     res.send('Ghost Is Coming Soon....');
 });
-app.get('/users/add', (req, res) =>{
-    res.send('i am user');
+app.get('/Ghost-Bikers/add', (req, res) =>{
+    res.send('I am Ghost-Bikers add data');
 });
 
 app.listen(port, () =>{
