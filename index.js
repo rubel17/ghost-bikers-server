@@ -19,19 +19,34 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
      const userCollection = client.db('Rubel').collection('Ghost-Bikers');
+     const reviewCollection = client.db('Rubel').collection('reviewData');
 
-        app.get('/Ghost-Bikers', async(req, res) =>{
+        app.get('/GhostBikers', async(req, res) =>{
             const query = {};
             const cursor = userCollection.find(query);
             const users = await cursor.toArray();
             res.send(users);
         })
 
-        app.get('/Ghost-Bikers/:id', async(req, res) =>{
+        app.get('/GhostBikersLimit', async(req, res) =>{
+            const query = {};
+            const cursor = userCollection.find(query);
+            const users = await cursor.limit(3).toArray();
+            res.send(users);
+        })
+
+        app.get('/GhostBikers/:id', async(req, res) =>{
             const id = req.params.id;
             const query = { _id: ObjectId(id)};
             const ghost = await userCollection.findOne(query);
             res.send(ghost);
+        })
+
+        //new api
+        app.post('/reviewData', async(req, res)=>{
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
         })
 
     // app.post('/Ghost-Bikers', async(req, res) => {
