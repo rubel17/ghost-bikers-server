@@ -43,7 +43,7 @@ async function run() {
         })
 
 
-          //Review api get.
+          //Review api get all Data.
           app.get('/reviewData', async(req, res)=>{
             let query = {};
             console.log(req.query.email)
@@ -57,12 +57,40 @@ async function run() {
             res.send(reviews);
           })
 
+          //Review api get Id Data.
+          app.get('/reviewData/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)};
+            const ghost = await reviewCollection.findOne(query);
+            res.send(ghost);
+        })
+
+
         //Review api post.
         app.post('/reviewData', async(req, res)=>{
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send(result);
         })
+
+
+            //Review api Update status.
+            app.patch('/reviewData/:id', async(req, res) =>{
+                const id = req.params.id;
+                const status = req.body.status;
+                const email = req.body.email;
+                const serviceName = req.body.serviceName;
+                const query = {_id: ObjectId(id)};
+                const updatedUser = {
+                    $set:{
+                        status: status,
+                        email: email,
+                        serviceName: serviceName
+                    }
+                };
+                const result = await reviewCollection.updateOne(query, updatedUser);
+                res.send(result);
+    })
 
         //Review api delete.
         app.delete('/reviewData/:id', async(req, res) => {
@@ -72,30 +100,6 @@ async function run() {
                 res.send(result);
                 
             })
-
-
-    // app.post('/Ghost-Bikers', async(req, res) => {
-    //     const user = req.body;
-    //     const result = await userCollection.insertOne(user);
-    //     res.send(result);
-    //     console.log(result)
-    // })
-
-    // app.put('/Ghost-Bikers/:id', async(req, res) =>{
-    //     const id = req.params.id;
-    //     const filter = {_id: ObjectId(id)};
-    //     const user = req.body;
-    //     const option = {upsert: true};
-    //     const updatedUser = {
-    //         $set:{
-    //             name:user.name,
-    //             email:user.email
-    //         }
-    //     };
-    //     const result = await userCollection.updateOne(filter, updatedUser, option);
-    //     res.send(result);
-    //     console.log(updatedUser);
-    // })
 
     } finally {
       
