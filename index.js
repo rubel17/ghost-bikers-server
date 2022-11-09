@@ -42,12 +42,28 @@ async function run() {
             res.send(ghost);
         })
 
-        //new api
+
+          //Review api get.
+          app.get('/reviewData', async(req, res)=>{
+            let query = {};
+            console.log(req.query.email)
+            if(req.query.email){
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+          })
+
+        //Review api post.
         app.post('/reviewData', async(req, res)=>{
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send(result);
         })
+
 
     // app.post('/Ghost-Bikers', async(req, res) => {
     //     const user = req.body;
