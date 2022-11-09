@@ -64,6 +64,15 @@ async function run() {
             res.send(result);
         })
 
+        //Review api delete.
+        app.delete('/reviewData/:id', async(req, res) => {
+                const id = req.params.id;
+                const query = {_id: ObjectId(id)}
+                const result = await reviewCollection.deleteOne(query);
+                res.send(result);
+                
+            })
+
 
     // app.post('/Ghost-Bikers', async(req, res) => {
     //     const user = req.body;
@@ -86,14 +95,6 @@ async function run() {
     //     const result = await userCollection.updateOne(filter, updatedUser, option);
     //     res.send(result);
     //     console.log(updatedUser);
-    // })
-
-    // app.delete('/Ghost-Bikers/:id', async(req, res) => {
-    //     const id = req.params.id;
-    //     const query = {_id: ObjectId(id)}
-    //     const result = await userCollection.deleteOne(query);
-    //     res.send(result);
-    //     console.log(id)
     // })
 
     } finally {
