@@ -11,25 +11,25 @@ app.use(cors());
 app.use(express.json());
 
 
-
 const uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@ac-leabwa6-shard-00-00.nzbu8kl.mongodb.net:27017,ac-leabwa6-shard-00-01.nzbu8kl.mongodb.net:27017,ac-leabwa6-shard-00-02.nzbu8kl.mongodb.net:27017/?ssl=true&replicaSet=atlas-8a48sm-shard-0&authSource=admin&retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+//jwt token function.
+
 function verifyJwt(req, res, next){
     const authHeader = req.headers.authorization;
     if(!authHeader){
-        return res.status(401).send({message: 'Unauthorized access'})
+        return res.status(401).send({message: 'Unauthorized access1'})
     }
     const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded){
         if(err){
-           return res.status(403).send({message: 'Unauthorized access'})
+           return res.status(403).send({message: 'Unauthorized access2'})
         }
         req.decoded = decoded;
         next();
     })
-
 }
 
 async function run() {
@@ -48,22 +48,23 @@ async function run() {
         
         app.get('/GhostBikers', async(req, res) =>{
             const query = {};
-            const cursor = userCollection.find(query);
+            const cursor = userCollection.find(query).sort( { price: -1 } );
             const users = await cursor.toArray();
             res.send(users);
         })
 
            //GhostBikers api post.
            app.post('/GhostBikers',verifyJwt, async(req, res)=>{
+            req.body.time = new Date();
             const service = req.body;
-            const result = await userCollection.insertOne(service);
+            const result = await userCollection.insertOne(service).sort( { time: -1 } );
             res.send(result);
             console.log(result);
         })
 
         app.get('/GhostBikersLimit', async(req, res) =>{
             const query = {};
-            const cursor = userCollection.find(query);
+            const cursor = userCollection.find(query).sort( { time: -1 } );
             const users = await cursor.limit(3).toArray();
             res.send(users);
         })
@@ -74,14 +75,19 @@ async function run() {
             const ghost = await userCollection.findOne(query);
             res.send(ghost);
         })
-
+        app.get('/reviewDatas', async(req, res) =>{
+            const query = {};
+            const cursor = reviewCollection.find(query).sort( { time: -1 } );
+            const users = await cursor.toArray();
+            res.send(users);
+        })
 
           //Review api get all EmailData.
           app.get('/reviewData', verifyJwt, async(req, res)=>{
             const decoded = req.decoded;
             console.log(decoded);
             if(decoded.email !== req.query.email){
-                return res.status(403).send({message: 'Unauthorized access'})
+                return res.status(403).send({message: 'Unauthorized access3'})
             }
             let query = {};
             if(req.query.email){
@@ -89,7 +95,7 @@ async function run() {
                     email: req.query.email
                 }
             }
-            const cursor = reviewCollection.find(query);
+            const cursor = reviewCollection.find(query).sort( { time: -1 });
             const reviews = await cursor.toArray();
             res.send(reviews);
           })
@@ -105,8 +111,9 @@ async function run() {
 
         //Review api post.
         app.post('/reviewData',verifyJwt, async(req, res)=>{
+            req.body.time = new Date();
             const review = req.body;
-            const result = await reviewCollection.insertOne(review);
+            const result = await reviewCollection.insertOne(review).sort({ time: -1 }).pretty();
             res.send(result);
         })
 
