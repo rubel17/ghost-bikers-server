@@ -35,6 +35,7 @@ function verifyJwt(req, res, next){
 async function run() {
     try {
      const userCollection = client.db('Rubel').collection('Ghost-Bikers');
+     const userCollectiont = client.db('Rubel').collection('Product');
      const reviewCollection = client.db('Rubel').collection('reviewData');
 
      //jwt token
@@ -48,23 +49,31 @@ async function run() {
         
         app.get('/GhostBikers', async(req, res) =>{
             const query = {};
-            const cursor = userCollection.find(query).sort( { price: -1 } );
+            const cursor = userCollection.find(query).sort({time: -1});
+             //new input .sort({time: -1})
             const users = await cursor.toArray();
             res.send(users);
+        })
+        app.get('/Product', async(req, res) =>{
+            const query = {};
+            const cursors = userCollectiont.find(query);
+            const user = await cursors.toArray();
+            res.send(user);
         })
 
            //GhostBikers api post.
            app.post('/GhostBikers',verifyJwt, async(req, res)=>{
             req.body.time = new Date();
             const service = req.body;
-            const result = await userCollection.insertOne(service).sort( { time: -1 } );
+            const result = await userCollection.insertOne(service);
             res.send(result);
             console.log(result);
         })
 
         app.get('/GhostBikersLimit', async(req, res) =>{
             const query = {};
-            const cursor = userCollection.find(query).sort( { time: -1 } );
+            const cursor = userCollection.find(query).sort({time: -1});
+            //new input=.sort({time: -1})
             const users = await cursor.limit(3).toArray();
             res.send(users);
         })
@@ -77,7 +86,7 @@ async function run() {
         })
         app.get('/reviewDatas', async(req, res) =>{
             const query = {};
-            const cursor = reviewCollection.find(query).sort( { time: -1 } );
+            const cursor = reviewCollection.find(query);
             const users = await cursor.toArray();
             res.send(users);
         })
@@ -95,10 +104,12 @@ async function run() {
                     email: req.query.email
                 }
             }
-            const cursor = reviewCollection.find(query).sort( { time: -1 });
+            const cursor = reviewCollection.find(query).sort({time: -1});
             const reviews = await cursor.toArray();
             res.send(reviews);
           })
+
+          //.sort( { price: -1 } )
 
           //Review api get Id Data.
           app.get('/reviewData/:id', async(req, res) =>{
@@ -113,7 +124,7 @@ async function run() {
         app.post('/reviewData',verifyJwt, async(req, res)=>{
             req.body.time = new Date();
             const review = req.body;
-            const result = await reviewCollection.insertOne(review).sort({ time: -1 }).pretty();
+            const result = await reviewCollection.insertOne(review);
             res.send(result);
         })
 
